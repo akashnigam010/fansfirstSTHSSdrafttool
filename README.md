@@ -1,6 +1,6 @@
 # FansFirst Season Ticket Holder Shared Seats Draft Tool - REST Contracts
 
-## 1. getAllDrafts() - endpoint : http://<IP>/getAllDrafts
+## 1. getAllDrafts() - endpoint : http://< server IP >/getAllDrafts
 
 ### Request GET
 
@@ -23,7 +23,7 @@
 }
 ```
 
-## 2. createDraft() - endpoint : http://<IP>/createDraft
+## 2. createDraft() - endpoint : http://< server IP >/createDraft
 
 ### Request
 
@@ -54,7 +54,7 @@
 }
 ```
 
-## 3. verifyEmail() - endpoint : http://<IP>/verifyEmail
+## 3. verifyEmail() - endpoint : http://< server IP >/verifyEmail
 
 ### Request
 
@@ -80,7 +80,7 @@
 ```
 
 
-## 4. checkDraftStatus() - endpoint : http://<IP>/checkDraftStatus
+## 4. checkDraftStatus() - endpoint : http://< server IP >/checkDraftStatus
 
 ### Request
 
@@ -127,7 +127,7 @@
 }
 ```
 
-## 5. getAllGames() - endpoint : http://<IP>/getAllGames
+## 5. getAllGames() - endpoint : http://< server IP >/getAllGames
 
 ### Request GET
 
