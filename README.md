@@ -211,10 +211,10 @@
 
 5. ROUND_USER_MAPPING
 
-|ID 	|	PREFERENCE	|	USER_ID	|	DRAFT_ID	|	ROUND_ID	|	GAME_ID		|	STATUS	|	START_DATE	|	END_DATE 	STATUSES(DEFAULT/EMAILED/PICKED) |
-|-------|---------------|-----------|---------------|---------------|---------------|-----------|---------------|------------------------------------------------|
-|1		|	23			|	1		|	1			|	1			|	1			| 	PICKED	|	xxx			|	yyyy										 |	
-|2		|	34			|	2		|	1			|	1			|	null		|	EMAILED	|	ppp			|	qqq											 |
+|ID 	|	PREFERENCE	|	USER_ID	|	DRAFT_ID	|	ROUND_ID	|	GAME_ID		|	STATUS (DEFAULT/EMAILED/PICKED)	|	START_DATE	|	END_DATE 	|
+|-------|---------------|-----------|---------------|---------------|---------------|-----------------------------------|---------------|---------------|
+|1		|	23			|	1		|	1			|	1			|	1			| 	PICKED							|	xxx			|	yyyy	 	|	
+|2		|	34			|	2		|	1			|	1			|	null		|	EMAILED							|	ppp			|	qqq			|
 
 
 
