@@ -62,8 +62,6 @@
 {
 	id : number,			// id of the participant verifying email
 	email : string			// email address of the participant verifying email
-	status : boolean,		// if no error/exception occurred - true, otherwise false
-	error : string  		// populate with error description only when status is false, otherwise always null
 }
 
 ```
@@ -148,3 +146,107 @@
 	error : string  		// populate with error description only when status is false, otherwise always null	
 }
 ```
+
+
+## 6. pick() - endpoint : http://< server IP >/pick
+
+### Request
+```
+{
+	id: 		number,			// user id
+	gameId: 	number,			// id of the selected game
+	roundId:	number,			// round id
+	draftId:	number			// draft id
+}
+
+```
+
+### Response
+
+```
+{
+	id : number				// id of the draft
+	status : boolean,		// if no error/exception occurred - true, otherwise false
+	error : string  		// populate with error description only when status is false, otherwise always null	
+}
+```
+
+
+# DB Design
+
+
+1. GAME
+
+| ID 	|	NAME		|	DATE 					| Ranking |
+|-------|---------------|---------------------------|---------|
+|1		|	Montreal	|	Saturday 27th October	| 2		  |
+
+
+
+2. DRAFT
+
+| ID 	|	ROW		|	SECTION		|	STATUS (VERIFYING/VERIFICATION_COMPLETE/EMAILING/ASSIGNED) |
+|-------|-----------|---------------|--------------------------------------------------------------|
+|1		|	12		|	13A			|	EMAILING												   |
+
+
+
+3. ROUND
+
+|ID 	|	DRAFT_ID	|	STATUS (NOT_STARTED/STARTED/DONE)	|
+|-------|---------------|---------------------------------------|
+|1		|	1			|	DONE								|
+|2		|	2			|	STARTED 							|
+
+
+
+4. USER
+
+|ID 	|	NAME		|	EMAIL 	|	IS_VERIFIED		|	DRAFT_ID 	|
+|-------|---------------|-----------|-------------------|---------------|
+|1		|	Vighnesh	|	v@gmail	|	true			|	1			|
+|2		|	Akash		|	a@gmail	|	no				|	1			|
+
+
+
+5. ROUND_USER_MAPPING
+
+|ID 	|	PREFERENCE	|	USER_ID	|	DRAFT_ID	|	ROUND_ID	|	GAME_ID		|	STATUS	|	START_DATE	|	END_DATE 	STATUSES(DEFAULT/EMAILED/PICKED) |
+|-------|---------------|-----------|---------------|---------------|---------------|-----------|---------------|------------------------------------------------|
+|1		|	23			|	1		|	1			|	1			|	1			| 	PICKED	|	xxx			|	yyyy										 |	
+|2		|	34			|	2		|	1			|	1			|	null		|	EMAILED	|	ppp			|	qqq											 |
+
+
+
+
+# Jobs
+
+## Job 1 (Single Transaction)
+
+- When all users of a draft are verified
+
+- find out how many users for a draft (15)
+
+- find out total number of games (45)
+
+- total rounds = 45/15 = 3 rounds
+
+- insert 3 rows in rounds table (NOT_STARTED)
+
+- insert round_user_mapping rows (this is where your snake ladder logic comes in)
+
+- draft status - VERIFICATION_COMPLETE
+
+
+
+## Job 2 (Single Transaction)
+
+- Get all drafts where status = VERIFICATION_COMPLETE
+
+- Get all rounds of this draft (order of insertion - Round 1 -> Round 2 -> Round 3 etc)
+
+- Start the first round - (status = STARTED)
+
+- Email the first user from the round_user_mapping table
+
+- Set the status of the draft = EMAILING
