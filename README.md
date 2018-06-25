@@ -1,10 +1,57 @@
-# FansFirst Season Ticket Holder Shared Seats Draft Tool - REST Contracts
+# FansFirst Season Ticket Holder Shared Seats Draft Tool
 
-## 1. getAllDrafts() - endpoint : http://< server IP >/getAllDrafts
+## WORKFLOW
 
-### Request GET
+- User creates a new draft by entering ticket details and number of participant and their name and email
+- Application saves draft and participant details and sends participation emails to all users awaiting their confirmation
+- Job1 keeps checking if all the participants of a draft have confirmed their participation
+- When all participants have confirmed their participation, Job 1 automatically creates rounds and participant-round mapping based on Snake Draft algorithm
+- Job 2 keeps looking when rounds for a draft are created. As soon as they are created, Job 2 starts sending out email for picking a game to user based on their ordinal number (order in which they will pick the game).
+- Job 2 also keeps a check if a round is complete. Once complete, it will mark the status of a round to DONE and start a new round, repeating the same process.
+- Once all the participants have picked the games, the status of the draft will be marked as ASSIGNED
+- UI will continuously keep a track of participant activities and keep showing data to user based on different statuses of Participant confirmation, round status and pick status.
 
-### Response
+
+## JOBS
+
+### Job 1 (Single Transaction)
+
+- When all users of a draft are verified
+
+- find out how many users for a draft (15)
+
+- find out total number of games (45)
+
+- total rounds = 45/15 = 3 rounds
+
+- insert 3 rows in rounds table (NOT_STARTED)
+
+- insert round_user_mapping rows (this is where your snake ladder logic comes in)
+
+- draft status - VERIFICATION_COMPLETE
+
+
+
+### Job 2 (Single Transaction)
+
+- Get all drafts where status = VERIFICATION_COMPLETE
+
+- Get all rounds of this draft (order of insertion - Round 1 -> Round 2 -> Round 3 etc)
+
+- Start the first round - (status = STARTED)
+
+- Email the first user from the round_user_mapping table
+
+- Set the status of the draft = EMAILING
+
+
+## REST contracts
+
+### 1. getAllDrafts() - endpoint : http://< server IP >/getAllDrafts
+
+- Request GET
+
+- Response
 
 ```
 {
@@ -23,9 +70,9 @@
 }
 ```
 
-## 2. createDraft() - endpoint : http://< server IP >/createDraft
+### 2. createDraft() - endpoint : http://< server IP >/createDraft
 
-### Request
+- Request
 
 ```
 {
@@ -44,7 +91,7 @@
 }
 ```
 
-### Response
+- Response
 
 ```
 {
@@ -54,9 +101,9 @@
 }
 ```
 
-## 3. verifyEmail() - endpoint : http://< server IP >/verifyEmail
+### 3. verifyEmail() - endpoint : http://< server IP >/verifyEmail
 
-### Request
+- Request
 
 ```
 {
@@ -66,7 +113,7 @@
 
 ```
 
-### Response
+- Response
 
 ```
 {
@@ -78,9 +125,9 @@
 ```
 
 
-## 4. checkDraftStatus() - endpoint : http://< server IP >/checkDraftStatus
+### 4. checkDraftStatus() - endpoint : http://< server IP >/checkDraftStatus
 
-### Request
+- Request
 
 ```
 {
@@ -88,7 +135,7 @@
 }
 ```
 
-### Response 
+- Response 
 
 ```
 {
@@ -125,11 +172,11 @@
 }
 ```
 
-## 5. getAllGames() - endpoint : http://< server IP >/getAllGames
+### 5. getAllGames() - endpoint : http://< server IP >/getAllGames
 
-### Request GET
+- Request GET
 
-### Response
+- Response
 
 ```
 {
@@ -148,9 +195,10 @@
 ```
 
 
-## 6. pick() - endpoint : http://< server IP >/pick
+### 6. pick() - endpoint : http://< server IP >/pick
 
-### Request
+- Request
+
 ```
 {
 	id: 		number,			// user id
@@ -161,7 +209,7 @@
 
 ```
 
-### Response
+- Response
 
 ```
 {
@@ -172,10 +220,10 @@
 ```
 
 
-# DB Design
+## Database Design
 
 
-1. GAME
+### 1. GAME
 
 | ID 	|	NAME		|	DATE 					| Ranking |
 |-------|---------------|---------------------------|---------|
@@ -183,7 +231,7 @@
 
 
 
-2. DRAFT
+### 2. DRAFT
 
 | ID 	|	ROW		|	SECTION		|	STATUS (VERIFYING/VERIFICATION_COMPLETE/EMAILING/ASSIGNED) |
 |-------|-----------|---------------|--------------------------------------------------------------|
@@ -191,7 +239,7 @@
 
 
 
-3. ROUND
+### 3. ROUND
 
 |ID 	|	DRAFT_ID	|	STATUS (NOT_STARTED/STARTED/DONE)	|
 |-------|---------------|---------------------------------------|
@@ -200,7 +248,7 @@
 
 
 
-4. USER
+### 4. USER
 
 |ID 	|	NAME		|	EMAIL 	|	IS_VERIFIED		|	DRAFT_ID 	|
 |-------|---------------|-----------|-------------------|---------------|
@@ -209,7 +257,7 @@
 
 
 
-5. ROUND_USER_MAPPING
+### 5. ROUND_USER_MAPPING
 
 |ID 	|	PREFERENCE	|	USER_ID	|	DRAFT_ID	|	ROUND_ID	|	GAME_ID		|	STATUS (DEFAULT/EMAILED/PICKED)	|	START_DATE	|	END_DATE 	|
 |-------|---------------|-----------|---------------|---------------|---------------|-----------------------------------|---------------|---------------|
@@ -218,35 +266,3 @@
 
 
 
-
-# Jobs
-
-## Job 1 (Single Transaction)
-
-- When all users of a draft are verified
-
-- find out how many users for a draft (15)
-
-- find out total number of games (45)
-
-- total rounds = 45/15 = 3 rounds
-
-- insert 3 rows in rounds table (NOT_STARTED)
-
-- insert round_user_mapping rows (this is where your snake ladder logic comes in)
-
-- draft status - VERIFICATION_COMPLETE
-
-
-
-## Job 2 (Single Transaction)
-
-- Get all drafts where status = VERIFICATION_COMPLETE
-
-- Get all rounds of this draft (order of insertion - Round 1 -> Round 2 -> Round 3 etc)
-
-- Start the first round - (status = STARTED)
-
-- Email the first user from the round_user_mapping table
-
-- Set the status of the draft = EMAILING
