@@ -4,23 +4,31 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { VerifyemailComponent } from './verifyemail/verifyemail.component';
+import { VerifyEmailComponent } from './verifyemail/verifyemail.component';
 import { DraftComponent } from './draft/draft.component';
-import { AppRoutingModule } from './/app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
+
+// Services
+import {EmailService} from './service';
+// Providers
+import {HttpProvider, WebApiProvider} from './provider';
+
+const services = [EmailService];
+const providers = [HttpProvider, WebApiProvider];
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    VerifyemailComponent,
+    VerifyEmailComponent,
     DraftComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [...services, ...providers],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

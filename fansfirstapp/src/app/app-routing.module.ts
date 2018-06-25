@@ -2,13 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { VerifyemailComponent } from './verifyemail/verifyemail.component';
+import { VerifyEmailComponent } from './verifyemail/verifyemail.component';
 
 export const AppRoutes: Routes = [
-  {path: '', redirectTo: 'home', pathMatch: 'full'},
-  // {path: '**', redirectTo: 'home'},
-  {path: 'home', component: HomeComponent},
-  {path: 'verify', component: VerifyemailComponent}
+  {path: '', component: HomeComponent},
+  {path: 'verify', component: VerifyEmailComponent}
 ];
 
 @NgModule({
